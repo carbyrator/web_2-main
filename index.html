@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учет студентов общежития</title>
+    <link rel="icon" type="image/jpeg" href="assets/favicon.jpg">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<main>
+    <header class="app-header">
+        <div class="brand">
+            <img class="brand-mark" src="assets/favicon.jpg" alt="">
+            <div>
+                <h1>Учет студентов общежития</h1>
+                <p>Журнал проживающих</p>
+            </div>
+        </div>
+    </header>
+    <div>
+        <h2 id="studentsTitle">Студенты</h2>
+    </div>
+    <form id="filterForm" aria-label="Фильтры студентов">
+        <h2>Фильтры</h2>
+        <div class="filter-grid">
+            <label for="filterName">ФИО
+                <input id="filterName" name="name" type="text" placeholder="Иван Иванов">
+            </label>
+            <label for="filterGroup">Группа
+                <input id="filterGroup" name="group" type="text" placeholder="M3301">
+            </label>
+            <label for="filterIsu">ИСУ ID
+                <input id="filterIsu" name="isu" type="number" min="100000" max="999999" placeholder="123456">
+            </label>
+            <label for="filterDorm">Общежитие
+                <input id="filterDorm" name="dormitory" type="number" min="1" max="100" placeholder="8">
+            </label>
+            <label for="filterRoom">Комната
+                <input id="filterRoom" name="room" type="text" placeholder="101">
+            </label>
+            <label for="filterDate">Заселение до
+                <input id="filterDate" name="expDate" type="date">
+            </label>
+            <label for="filterForeigner">Статус
+                <select id="filterForeigner" name="foreigner">
+                    <option value="">Любой</option>
+                    <option value="true">Иностранец</option>
+                    <option value="false">Не иностранец</option>
+                </select>
+            </label>
+            <label for="filterNotes">Заметки
+                <input id="filterNotes" name="notes" type="text" placeholder="Точное совпадение">
+            </label>
+        </div>
+        <div class="filter-actions">
+            <button type="submit">Найти</button>
+            <button type="reset">Сбросить</button>
+            <span id="filterStatus" role="status" aria-live="polite"></span>
+        </div>
+    </form>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+            <tr>
+                <th scope="col">ФИО</th>
+                <th scope="col">Группа</th>
+                <th scope="col">ИСУ ID</th>
+                <th scope="col">Общежитие</th>
+                <th scope="col">Комната</th>
+                <th scope="col">Заселение до</th>
+                <th scope="col">Статус</th>
+                <th scope="col">Действия</th>
+            </tr>
+            </thead>
+            <tbody id="studentsTableBody">
+
+            </tbody>
+        </table>
+    </div>
+    <button id="addStudentButton" type="button" aria-label="Добавить студента" title="Добавить студента">
+        Добавить студента
+    </button>
+</main>
+<script src="js/storage.js"></script>
+<script src="js/index.js"></script>
+
+</body>
+</html>

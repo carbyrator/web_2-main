@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Добавление студента</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="assets/favicon.jpg">
+</head>
+<body>
+<h1>Заполните данные о студенте</h1>
+<form id="studentForm" novalidate>
+<label for="name">ФИО</label>
+
+<input
+        type="text"
+        id="name"
+        name="name"
+        required
+        minlength="5"
+        maxlength="100"
+        pattern="[A-Za-zА-Яа-яЁё]+(?:[ ]+[A-Za-zА-Яа-яЁё]+)+"
+        title="ФИО должно состоять из двух или более слов, содержащих только буквы"
+>
+<br>
+<label for="group">Группа</label>
+<input
+        type="text"
+        id="group"
+        name="group"
+        required
+        minlength="5"
+        maxlength="5"
+        pattern="[A-Za-z][0-9]{4}"
+        title="Одна латинская буква и четыре цифры, например P1234"
+>
+<br>
+<label for="isu">ИСУ</label>
+<input
+        type="number"
+        id="isu"
+        name="isu"
+        required
+        min="100000"
+        max="999999"
+>
+<br>
+<label for="dorm">Общежитие</label>
+
+<input
+        type="number"
+        id="dorm"
+        name="dorm"
+        required
+        min="1"
+        max="100"
+>
+<br>
+<label for="room">Комната</label>
+
+<input
+        type="text"
+        id="room"
+        name="room"
+        required
+        minlength="2"
+        maxlength="5"
+        pattern="[0-9]{2,4}[A-Za-zА-Яа-яЁё]?"
+        title="От 2 до 4 цифр и необязательная буква, например 25А"
+>
+<br>
+<label for="exp_date">Срок заселения</label>
+<input
+        type="date"
+        id="exp_date"
+        name="exp_date"
+        required
+>
+<br>
+<label>
+    <input type="checkbox" id="foreigner" name="foreigner">
+    Иностранный студент
+</label>
+<br>
+<label for="notes">Заметки</label>
+<textarea
+        id="notes"
+        name="notes"
+        maxlength="500"
+></textarea>
+<br>
+<button type="submit" id="submit">Сохранить</button>
+<button type="button" id="return">На главную</button>
+</form>
+
+<script src="js/storage.js"></script>
+<script src="js/form.js"></script>
+
+</body>
+</html>
