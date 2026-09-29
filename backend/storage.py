@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-d_b = Path(__file__).with_name('students.json') # база данных рядом с приложением
+d_b = Path(__file__).resolve().parent.parent / 'students.json' # база данных в корне проекта
 
 # Читает список студентов из JSON-файла
 def load_data():

@@ -1,9 +1,9 @@
-import storage
 import re # встроенная библиотека Python для работы с регулярными выражениями
 from datetime import date
+import storage
 
 # Валидация (Возвращает словарь ошибок или пустой словарь, если всё ок)
-def validate(data, is_update=False):
+def validate_student(data, is_update=False):
     """Валидация"""
     errors = {}
 
@@ -100,52 +100,47 @@ def normalize_filters(raw_filters):
 
     return filters, errors
 
-# Создает нового студента
+
 def create_student(data):
-    """Создает cтудента"""
-    errors = validate(data) # Валидация
-    if errors:
-        return None, errors, 422  # 422 Unprocessable Entity (ошибка валидации)
-
-    data = dict(data)
-    data['isu'] = int(data['isu'])
-    data['dorm'] = int(data['dorm'])
-
-    if storage.get_by_isu(data['isu']): # Проверка на дубликат ИСУ
-        return None, {'isu': 'Студент с таким ИСУ уже существует'}, 409  # 409 Conflict
-
-    student = storage.add(data) # Сохранение
-    return student, None, 201  # 201 Created
-
-# Обновляет данные студента (частично или полностью)
-def update_student(isu, data):
-    """Обновляет данные студента"""
-    existing = storage.get_by_isu(isu)
-    if not existing:
-        return None, {'error': 'Студент не найден'}, 404  # 404 Not Found
-
-    errors = validate(data, is_update=True) # Валидация (is_update=True, чтобы не требовать все поля)
+    """Проверяет правила создания и сохраняет студента."""
+    errors = validate_student(data)
     if errors:
         return None, errors, 422
 
-    data = dict(data)
-    for field in ('isu', 'dorm'):
-        if field in data:
-            data[field] = int(data[field])
+    student = dict(data)
+    student['isu'] = int(student['isu'])
+    student['dorm'] = int(student['dorm'])
+    if storage.get_by_isu(student['isu']) is not None:
+        return None, {'isu': 'Студент с таким ИСУ уже существует'}, 409
+    return storage.add(student), None, 201
 
-    # Если меняем ИСУ, проверяем, не занят ли новый ИСУ
-    if 'isu' in data and data['isu'] != isu:
-        if storage.get_by_isu(data['isu']):
+
+def update_student(isu, data):
+    """Проверяет правила обновления и меняет найденного студента."""
+    if storage.get_by_isu(isu) is None:
+        return None, {'error': 'Студент не найден'}, 404
+
+    errors = validate_student(data, is_update=True)
+    if errors:
+        return None, errors, 422
+
+    updates = dict(data)
+    for field in ('isu', 'dorm'):
+        if field in updates:
+            updates[field] = int(updates[field])
+
+    if 'isu' in updates and updates['isu'] != isu:
+        if storage.get_by_isu(updates['isu']) is not None:
             return None, {'isu': 'Студент с таким ИСУ уже существует'}, 409
 
-    student = storage.update(isu, data) # Сохранение
-    return student, None, 200  # 200 OK
+    student = storage.update(isu, updates)
+    if student is None:
+        return None, {'error': 'Студент не найден'}, 404
+    return student, None, 200
+
 
 def delete_student(isu):
-    """Удаляет студента"""
-    existing = storage.get_by_isu(isu)
-    if not existing:
-        return None, 404  # 404 Not Found
-
-    storage.delete(isu)
-    return None, 204  # 204 No Content (успешно, но тело ответа пустое)
+    """Проверяет существование студента и удаляет его."""
+    if storage.get_by_isu(isu) is None or not storage.delete(isu):
+        return None, 404
+    return None, 204

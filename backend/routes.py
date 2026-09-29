@@ -49,13 +49,12 @@ def query_studens():
     filters, error = checked_filters(data)
     if error:
         return error
-    students = storage.filter_students(filters)
-    return jsonify(students), 200
+    return jsonify(storage.filter_students(filters)), 200
 
 @api.route('/api/requests/<int:isu>', methods=['GET'])
 def get_student(isu):
     student = storage.get_by_isu(isu)
-    if not student:
+    if student is None:
         return error_response('Студент не найден', 404)
     return jsonify(student), 200
 
