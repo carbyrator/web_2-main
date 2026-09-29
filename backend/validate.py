@@ -1,18 +1,21 @@
-import re # встроенная библиотека Python для работы с регулярными выражениями
+"""Правила проверки студента и фильтров, а также операции с проверкой ИСУ."""
+
+import re
 from datetime import date
 import storage
 
-# Валидация (Возвращает словарь ошибок или пустой словарь, если всё ок)
 def validate_student(data, is_update=False):
-    """Валидация"""
+    """Возвращает словарь ошибок полей; пустой словарь означает успех."""
     errors = {}
 
+    # При создании нужны все основные поля; при PATCH проверяем только присланные.
     if not is_update:
         required = ['name', 'group', 'isu', 'dorm', 'room', 'expDate', 'foreigner']
         for field in required:
             if field not in data or data[field] is None or str(data[field]).strip() == '':
                 errors[field] = 'Обязательное поле'
 
+    # fullmatch требует соответствия всей строки, а не только её части.
     if 'name' in data:
         name = data['name']
         if not isinstance(name, str) or not name.strip():
@@ -29,6 +32,7 @@ def validate_student(data, is_update=False):
 
     if 'isu' in data:
         isu = data['isu']
+        # bool исключаем отдельно: в Python это подкласс int.
         if isinstance(isu, bool) or not re.fullmatch(r'\d+', str(isu)):
             errors['isu'] = 'ИСУ должен быть целым числом'
         elif not 100000 <= int(isu) <= 999999:
@@ -47,6 +51,7 @@ def validate_student(data, is_update=False):
             errors['room'] = 'Комната: 2-4 цифры и необязательная буква'
 
     if 'expDate' in data:
+        # Неверную календарную дату date.fromisoformat сообщает через ValueError.
         try:
             if not isinstance(data['expDate'], str):
                 raise ValueError
@@ -63,14 +68,16 @@ def validate_student(data, is_update=False):
     return errors
 
 
+# Клиент может фильтровать только по свойствам модели студента.
 FILTER_FIELDS = {'name', 'group', 'isu', 'dorm', 'room', 'expDate', 'foreigner', 'notes'}
 
 
 def normalize_filters(raw_filters):
-    """Проверяет фильтры GET/QUERY и приводит их к типам модели студента."""
+    """Проверяет фильтры GET/QUERY и приводит числа и флаги к нужным типам."""
     filters = {}
     errors = {}
     for original_key, value in raw_filters.items():
+        # В примере ТЗ поле называется dormitory, в модели проекта — dorm.
         key = 'dorm' if original_key == 'dormitory' else original_key
         if key not in FILTER_FIELDS:
             errors[original_key] = 'Неизвестное свойство студента'
@@ -82,6 +89,7 @@ def normalize_filters(raw_filters):
                 continue
             value = int(value)
         elif key == 'foreigner':
+            # В URL всё приходит строками; "false" должен стать Python False.
             if isinstance(value, str) and value.lower() in ('true', 'false'):
                 value = value.lower() == 'true'
             elif not isinstance(value, bool):
@@ -94,6 +102,7 @@ def normalize_filters(raw_filters):
             value = value.strip()
 
         if key in filters and filters[key] != value:
+            # Например, dorm=8 и dormitory=9 задают разные значения одного поля.
             errors[original_key] = 'Противоречивые значения одного фильтра'
         else:
             filters[key] = value
@@ -102,21 +111,23 @@ def normalize_filters(raw_filters):
 
 
 def create_student(data):
-    """Проверяет правила создания и сохраняет студента."""
+    """Проверяет нового студента; возвращает (студент, ошибки, HTTP-код)."""
     errors = validate_student(data)
     if errors:
         return None, errors, 422
 
+    # Копия не меняет исходный словарь запроса; числовые поля храним как int.
     student = dict(data)
     student['isu'] = int(student['isu'])
     student['dorm'] = int(student['dorm'])
+    # ИСУ — уникальный идентификатор, поэтому дубликат не сохраняем.
     if storage.get_by_isu(student['isu']) is not None:
         return None, {'isu': 'Студент с таким ИСУ уже существует'}, 409
     return storage.add(student), None, 201
 
 
 def update_student(isu, data):
-    """Проверяет правила обновления и меняет найденного студента."""
+    """Проверяет PATCH и возвращает (студент, ошибки, HTTP-код)."""
     if storage.get_by_isu(isu) is None:
         return None, {'error': 'Студент не найден'}, 404
 
@@ -124,12 +135,14 @@ def update_student(isu, data):
     if errors:
         return None, errors, 422
 
+    # В updates остаются только поля из запроса: остальные свойства сохранятся.
     updates = dict(data)
     for field in ('isu', 'dorm'):
         if field in updates:
             updates[field] = int(updates[field])
 
     if 'isu' in updates and updates['isu'] != isu:
+        # Новый ИСУ допустим, только если он ещё не занят другим студентом.
         if storage.get_by_isu(updates['isu']) is not None:
             return None, {'isu': 'Студент с таким ИСУ уже существует'}, 409
 
@@ -140,7 +153,7 @@ def update_student(isu, data):
 
 
 def delete_student(isu):
-    """Проверяет существование студента и удаляет его."""
+    """Удаляет найденного студента; возвращает (None, HTTP-код)."""
     if storage.get_by_isu(isu) is None or not storage.delete(isu):
         return None, 404
     return None, 204
