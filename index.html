@@ -31,10 +31,10 @@
                 <input id="filterGroup" name="group" type="text" placeholder="M3301">
             </label>
             <label for="filterIsu">ИСУ ID
-                <input id="filterIsu" name="isu" type="number" min="100000" max="999999" placeholder="123456">
+                <input id="filterIsu" name="isu" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Часть ИСУ">
             </label>
             <label for="filterDorm">Общежитие
-                <input id="filterDorm" name="dormitory" type="number" min="1" max="100" placeholder="8">
+                <input id="filterDorm" name="dormitory" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Часть номера">
             </label>
             <label for="filterRoom">Комната
                 <input id="filterRoom" name="room" type="text" placeholder="101">
@@ -50,7 +50,7 @@
                 </select>
             </label>
             <label for="filterNotes">Заметки
-                <input id="filterNotes" name="notes" type="text" placeholder="Точное совпадение">
+                <input id="filterNotes" name="notes" type="text" placeholder="Часть текста">
             </label>
         </div>
         <div class="filter-actions">

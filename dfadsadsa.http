@@ -1,0 +1,49 @@
+@host = http://127.0.0.1:5000
+
+POST {{host}}/api/requests
+Content-Type: application/json
+
+{
+  "name": "Иван Иванов",
+  "group": "M3301",
+  "isu": 987654,
+  "dorm": 8,
+  "room": "101",
+  "expDate": "2027-06-01",
+  "foreigner": false,
+  "notes": "Тестовая запись"
+}
+
+### Получить студентов
+GET {{host}}/api/requests
+
+### Поиск по части имени, группы и ИСУ
+GET {{host}}/api/requests?name=иван&group=M3&isu=987
+
+### Поиск по части номера общежития
+GET {{host}}/api/requests?dormitory=8
+
+### Фильтры передаются в JSON-теле
+QUERY {{host}}/api/requests
+Content-Type: application/json
+
+{
+  "name": "иван",
+  "room": "10",
+  "foreigner": false,
+  "isu": "987"
+}
+
+### Получить студента по ИСУ
+GET {{host}}/api/requests/987654
+
+### Изменить только комнату
+PATCH {{host}}/api/requests/987654
+Content-Type: application/json
+
+{
+  "room": "102"
+}
+
+### Удалить студента по ИСУ
+DELETE {{host}}/api/requests/987654

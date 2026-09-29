@@ -57,7 +57,7 @@ def validate_student(data, is_update=False):
                 raise ValueError
             date.fromisoformat(data['expDate'])
         except ValueError:
-            errors['expDate'] = 'Укажите дату в формате ГГГГ-ММ-ДД'
+            errors['expDate'] = 'Укажите дату в формате ДД-ММ-ГГГГ'
 
     if 'foreigner' in data and not isinstance(data['foreigner'], bool):
         errors['foreigner'] = 'Укажите статус студента'
@@ -73,7 +73,7 @@ FILTER_FIELDS = {'name', 'group', 'isu', 'dorm', 'room', 'expDate', 'foreigner',
 
 
 def normalize_filters(raw_filters):
-    """Проверяет фильтры GET/QUERY и приводит числа и флаги к нужным типам."""
+    """Проверяет фильтры GET/QUERY; сохраняет цифры для поиска по части числа."""
     filters = {}
     errors = {}
     for original_key, value in raw_filters.items():
@@ -87,7 +87,8 @@ def normalize_filters(raw_filters):
             if isinstance(value, bool) or not re.fullmatch(r'\d+', str(value)):
                 errors[original_key] = 'Ожидалось целое число'
                 continue
-            value = int(value)
+            # Строка сохраняет введённые цифры, включая ведущие нули.
+            value = str(value)
         elif key == 'foreigner':
             # В URL всё приходит строками; "false" должен стать Python False.
             if isinstance(value, str) and value.lower() in ('true', 'false'):

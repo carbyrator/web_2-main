@@ -60,10 +60,14 @@ def delete(isu):
     return False
 
 def filter_students(filters):
-    """Оставляет записи, которые точно совпадают со всеми фильтрами GET/QUERY."""
+    """Ищет все записи по части значения каждого фильтра GET/QUERY."""
     students = load_data()
     result = students
     for key, value in filters.items():
-        result = [s for s in result if str(s.get(key)) == str(value)]
+        # Для флага нужен точный ответ, остальные поля ищем по части
+        if key == 'foreigner':
+            result = [s for s in result if s.get(key) is value]
+        else:
+            result = [s for s in result if value.casefold() in str(s.get(key, '')).casefold()]
 
     return result

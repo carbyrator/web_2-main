@@ -11,7 +11,7 @@ const day = String(today.getDate()).padStart(2, '0');
 const todayString = year + '-' + month + '-' + day;
 
 
-expDateInput.min = '1990-01-01';
+expDateInput.min = '01-01-1990';
 expDateInput.value = todayString;
 
 

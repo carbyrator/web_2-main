@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Чингиз Халилов",
+    "group": "P3222",
+    "isu": 505301,
+    "dorm": 4,
+    "room": "8941K",
+    "expDate": "2026-09-22",
+    "foreigner": true,
+    "notes": "ывыпавукр"
+  },
+  {
+    "name": "Шанин Иван",
+    "group": "P3220",
+    "isu": 687935,
+    "dorm": 6,
+    "room": "9876P",
+    "expDate": "1989-06-07",
+    "foreigner": false,
+    "notes": "gdxfchghj"
+  },
+  {
+    "name": "Сетало Елизавета",
+    "group": "P3220",
+    "isu": 505081,
+    "dorm": 9,
+    "room": "8945P",
+    "expDate": "2027-01-22",
+    "foreigner": false,
+    "notes": "fyguihuoijok"
+  },
+  {
+    "name": "Иван Иванов",
+    "group": "M3301",
+    "isu": 987654,
+    "dorm": 8,
+    "room": "101",
+    "expDate": "2027-06-01",
+    "foreigner": false,
+    "notes": "Тестовая запись"
+  }
+]
